@@ -56,15 +56,23 @@ func main() {
 		 if ok{
 			if value==input.Otp{
 				response, _:=json.Marshal("Password reset successfully")
-				w.WriteHeader(http.StatusAccepted)
+				
 				fmt.Println("password reset successfully")
 				w.Write(response)
+				w.WriteHeader(http.StatusAccepted)
+			}else{
+			response, _:=json.Marshal("Invalid otp")
+			
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(response)
+			w.WriteHeader(http.StatusBadRequest)
 			}
 		 }else{
             response, _:=json.Marshal("Invalid otp")
-			w.WriteHeader(http.StatusBadRequest)
+			
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(response)
+			w.WriteHeader(http.StatusBadRequest)
 		 }
 
 	})

@@ -5,15 +5,17 @@ import './App.css'
 
 function App() {
   const [token, setToken] = useState<string>("")
-
+  const [otp, setOtp] = useState<string>("")
+const [password, setPassword] = useState<string>("")
+const [email, setEmail] = useState<string>("")
   return (
     <>
       
         
       <div className="card">
-
-        <input placeholder='OTP'></input>
-      <input placeholder='New password'></input>
+<input placeholder='Email' value={email} onChange={(e)=>setEmail(e.target.value)}></input>
+        <input placeholder='OTP' value={otp} onChange={(e)=>setOtp(e.target.value)}></input>
+      <input placeholder='New password' value={password} onChange={(e)=>setPassword(e.target.value)}></input>
 
       <Turnstile onSuccess={(token) => {
         setToken(token)
@@ -21,9 +23,9 @@ function App() {
 
       <button disabled={token.length<=0} onClick={() => {
         axios.post("http://localhost:3000/reset-password", {
-          email: "swarnikarajsingh@gmail.com",
-          newpassword: "123456",
-          otp: "123456",
+          email: email,
+          newpassword: password,
+          otp: otp,
           token: token,
         })
       }}>Update password</button>

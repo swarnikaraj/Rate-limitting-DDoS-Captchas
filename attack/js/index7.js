@@ -20,10 +20,10 @@ async function makeRequest(url) {
   }
 }
 async function main() {
-  for (let i = 0; i < 99999999; i += 1000) {
+  for (let i = 0; i < 99999999; i += 4000) {
     let promises = [];
     console.log(i);
-    for (let j = 0; j < 1000; j++) {
+    for (let j = 0; j < 4000; j++) {
       promises.push(makeRequest(url));
     }
 

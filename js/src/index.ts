@@ -3,19 +3,31 @@ import { rateLimit } from 'express-rate-limit'
 const express = require("express")
 const app = express()
 
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
-    standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+const otplimiter = rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 3, // limit each IP to 3 requests per windowMs
+    message: "Too many requests, please try again later",
+    // limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+    standardHeaders: true, // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+    // store: ... , // Redis, Memcached, etc. See below.
+})
+
+const passwordRatelimiter = rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 3, // limit each IP to 3 requests per windowMs
+    message: "Too many requests, please try again later",
+    // limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+    standardHeaders: true, // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
     // store: ... , // Redis, Memcached, etc. See below.
 })
 
 // Apply the rate limiting middleware to all requests.
-app.use(limiter)
+
 app.use(express.json())
 const otpStore: Record<string, string> = {}
-app.post("/generate-otp", (req: any, res: any) => {
+app.post("/generate-otp", otplimiter, (req: any, res: any) => {
     const email = (req.body as any).email
     if (!email) {
         const data = { message: "email is required" };
@@ -30,7 +42,7 @@ app.post("/generate-otp", (req: any, res: any) => {
 
 })
 
-app.post("/reset-password", (req: any, res: any) => {
+app.post("/reset-password", passwordRatelimiter, (req: any, res: any) => {
     const { email, otp, newpassword } = req.body
     if (!email || !otp || !newpassword) {
         res.status(400).json({ message: "email, otp and newpassword are required" })

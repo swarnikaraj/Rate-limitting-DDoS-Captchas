@@ -1,5 +1,7 @@
 import { rateLimit } from 'express-rate-limit'
-
+import cors from 'cors'
+const dotenv = require("dotenv")
+dotenv.config()
 const express = require("express")
 const app = express()
 
@@ -26,6 +28,7 @@ const passwordRatelimiter = rateLimit({
 // Apply the rate limiting middleware to all requests.
 
 app.use(express.json())
+app.use(cors())
 const otpStore: Record<string, string> = {}
 app.post("/generate-otp", otplimiter, (req: any, res: any) => {
     const email = (req.body as any).email

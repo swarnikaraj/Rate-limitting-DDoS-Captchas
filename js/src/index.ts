@@ -15,7 +15,7 @@ const otplimiter = rateLimit({
 
 const passwordRatelimiter = rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
-    max: 3, // limit each IP to 3 requests per windowMs
+    max: 10, // limit each IP to 10 requests per windowMs
     message: "Too many requests, please try again later",
     // limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
     standardHeaders: true, // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header

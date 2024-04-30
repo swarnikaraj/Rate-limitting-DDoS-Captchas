@@ -42,8 +42,25 @@ app.post("/generate-otp", otplimiter, (req: any, res: any) => {
 
 })
 
-app.post("/reset-password", passwordRatelimiter, (req: any, res: any) => {
-    const { email, otp, newpassword } = req.body
+app.post("/reset-password", passwordRatelimiter, async (req: any, res: any) => {
+    const { email, otp, newpassword, token } = req.body
+
+    console.log(token);
+
+    let formData = new FormData();
+    formData.append('secret', process.env.SECRET_KEY || "");
+    formData.append('response', token);
+
+    const url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+    const result = await fetch(url, {
+        body: formData,
+        method: 'POST',
+    });
+    const challengeSucceeded = (await result.json()).success;
+
+    if (!challengeSucceeded) {
+        return res.status(403).json({ message: "Invalid reCAPTCHA token" });
+    }
     if (!email || !otp || !newpassword) {
         res.status(400).json({ message: "email, otp and newpassword are required" })
     }
